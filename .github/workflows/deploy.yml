@@ -16,7 +16,7 @@ jobs:
         with:
           host: 8.140.219.56
           username: root
-          port: 8080
+          port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script_stop: true
           script: |
