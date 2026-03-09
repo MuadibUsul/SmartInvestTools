@@ -1,0 +1,47 @@
+name: Deploy Smart Invest Tools
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 8.140.219.56
+          username: root
+          port: 8080
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            set -e
+
+            export DEPLOY_DIR="/var/www/smartinvesttools"
+            export REPO_URL="https://github.com/MuadibUsul/SmartInvestTools.git"
+            export BRANCH="master"
+
+            mkdir -p "$DEPLOY_DIR"
+            cd "$DEPLOY_DIR"
+
+            if [ ! -d ".git" ]; then
+              git clone --branch "$BRANCH" "$REPO_URL" .
+            else
+              git fetch origin "$BRANCH"
+              git reset --hard "origin/$BRANCH"
+            fi
+
+            npm ci
+            npm run build
+
+            if ! command -v pm2 >/dev/null 2>&1; then
+              npm install -g pm2
+            fi
+
+            pm2 startOrReload ecosystem.config.cjs --update-env
+            pm2 save
