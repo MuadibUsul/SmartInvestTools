@@ -21,15 +21,32 @@ jobs:
           script_stop: true
           command_timeout: 30m
           script: |
-            set -e
+            set -euxo pipefail
 
             export DEPLOY_DIR="/var/www/smartinvesttools"
             export REPO_URL="https://github.com/MuadibUsul/SmartInvestTools.git"
             export BRANCH="master"
             export NEXT_TELEMETRY_DISABLED=1
 
+            echo "== Environment =="
+            whoami
+            hostname
+            pwd
+            command -v node || true
+            command -v npm || true
+            command -v git || true
+
+            echo "== Prepare deploy directory =="
             mkdir -p "$DEPLOY_DIR"
             cd "$DEPLOY_DIR"
+            pwd
+            ls -la
+
+            echo "== Sync source =="
+            if [ ! -d ".git" ] && [ -n "$(find . -mindepth 1 -maxdepth 1 -print -quit)" ]; then
+              echo "Deploy directory exists but is not a git repository."
+              exit 1
+            fi
 
             if [ ! -d ".git" ]; then
               git clone --branch "$BRANCH" "$REPO_URL" .
@@ -38,12 +55,18 @@ jobs:
               git reset --hard "origin/$BRANCH"
             fi
 
+            echo "== Install dependencies =="
             npm ci
+
+            echo "== Build application =="
             npm run build
 
+            echo "== Ensure pm2 =="
             if ! command -v pm2 >/dev/null 2>&1; then
               npm install -g pm2
             fi
 
+            echo "== Start application =="
             pm2 startOrReload ecosystem.config.cjs --update-env
             pm2 save
+            pm2 list
