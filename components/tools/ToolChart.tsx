@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import {
   ArcElement,
   BarElement,
@@ -37,6 +39,15 @@ type ToolChartProps = {
   locale: Locale;
 };
 
+type ChartTheme = {
+  legend: string;
+  tick: string;
+  grid: string;
+  tooltipBackground: string;
+  tooltipBorder: string;
+  tooltipText: string;
+};
+
 function toDatasetColor(index: number) {
   const palette = [
     "rgba(15, 155, 142, 0.9)",
@@ -48,13 +59,65 @@ function toDatasetColor(index: number) {
   return palette[index % palette.length];
 }
 
+const fallbackChartTheme: ChartTheme = {
+  legend: "#0f172a",
+  tick: "#526072",
+  grid: "rgba(148, 163, 184, 0.18)",
+  tooltipBackground: "#ffffff",
+  tooltipBorder: "rgba(15, 23, 42, 0.08)",
+  tooltipText: "#0f172a",
+};
+
+function readChartTheme(): ChartTheme {
+  if (typeof window === "undefined") {
+    return fallbackChartTheme;
+  }
+
+  const styles = getComputedStyle(document.documentElement);
+  const read = (property: string, fallback: string) =>
+    styles.getPropertyValue(property).trim() || fallback;
+
+  return {
+    legend: read("--color-text", fallbackChartTheme.legend),
+    tick: read("--color-muted", fallbackChartTheme.tick),
+    grid: read("--color-border", fallbackChartTheme.grid),
+    tooltipBackground: read(
+      "--color-surface-strong",
+      fallbackChartTheme.tooltipBackground,
+    ),
+    tooltipBorder: read("--color-border", fallbackChartTheme.tooltipBorder),
+    tooltipText: read("--color-text", fallbackChartTheme.tooltipText),
+  };
+}
+
 export function ToolChart({ chart, locale }: ToolChartProps) {
+  const [chartTheme, setChartTheme] = useState<ChartTheme>(fallbackChartTheme);
+
+  useEffect(() => {
+    const syncTheme = () => {
+      setChartTheme(readChartTheme());
+    };
+
+    syncTheme();
+
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   const sharedLegend = {
     legend: {
       labels: {
-        color: "var(--color-muted)",
+        color: chartTheme.legend,
         usePointStyle: true,
         boxWidth: 10,
+        padding: 16,
       },
     },
   };
@@ -62,20 +125,20 @@ export function ToolChart({ chart, locale }: ToolChartProps) {
   const sharedCartesianScales = {
     x: {
       ticks: {
-        color: "var(--color-muted)",
+        color: chartTheme.tick,
       },
       grid: {
-        color: "rgba(148, 163, 184, 0.16)",
+        color: chartTheme.grid,
       },
     },
     y: {
       ticks: {
-        color: "var(--color-muted)",
+        color: chartTheme.tick,
         callback: (value: string | number) =>
           `${chart.valuePrefix ?? ""}${formatCompactNumber(Number(value), locale)}${chart.valueSuffix ?? ""}`,
       },
       grid: {
-        color: "rgba(148, 163, 184, 0.16)",
+        color: chartTheme.grid,
       },
     },
   };
@@ -86,6 +149,11 @@ export function ToolChart({ chart, locale }: ToolChartProps) {
     plugins: {
       ...sharedLegend,
       tooltip: {
+        backgroundColor: chartTheme.tooltipBackground,
+        borderColor: chartTheme.tooltipBorder,
+        borderWidth: 1,
+        titleColor: chartTheme.tooltipText,
+        bodyColor: chartTheme.tooltipText,
         callbacks: {
           label: (context: TooltipItem<"line">) =>
             `${context.dataset.label ?? ""}: ${chart.valuePrefix ?? ""}${Number(
@@ -103,6 +171,11 @@ export function ToolChart({ chart, locale }: ToolChartProps) {
     plugins: {
       ...sharedLegend,
       tooltip: {
+        backgroundColor: chartTheme.tooltipBackground,
+        borderColor: chartTheme.tooltipBorder,
+        borderWidth: 1,
+        titleColor: chartTheme.tooltipText,
+        bodyColor: chartTheme.tooltipText,
         callbacks: {
           label: (context: TooltipItem<"bar">) =>
             `${context.dataset.label ?? ""}: ${chart.valuePrefix ?? ""}${Number(
@@ -121,6 +194,11 @@ export function ToolChart({ chart, locale }: ToolChartProps) {
     plugins: {
       ...sharedLegend,
       tooltip: {
+        backgroundColor: chartTheme.tooltipBackground,
+        borderColor: chartTheme.tooltipBorder,
+        borderWidth: 1,
+        titleColor: chartTheme.tooltipText,
+        bodyColor: chartTheme.tooltipText,
         callbacks: {
           label: (context: TooltipItem<"doughnut">) =>
             `${context.label}: ${chart.valuePrefix ?? ""}${Number(
