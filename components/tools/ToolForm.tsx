@@ -123,6 +123,9 @@ export function ToolForm({
                 ) : null}
                 <input
                   type={renderInputType(field.type)}
+                  list={
+                    field.suggestions?.length ? `${field.key}-suggestions` : undefined
+                  }
                   inputMode={field.type === "ticker" ? "text" : "decimal"}
                   value={getDisplayValue(values[field.key])}
                   min={field.min}
@@ -145,6 +148,17 @@ export function ToolForm({
                   </span>
                 ) : null}
               </div>
+              {field.suggestions?.length ? (
+                <datalist id={`${field.key}-suggestions`}>
+                  {field.suggestions.map((suggestion) => (
+                    <option
+                      key={`${field.key}-${suggestion.value}`}
+                      value={suggestion.value}
+                      label={suggestion.label}
+                    />
+                  ))}
+                </datalist>
+              ) : null}
             </label>
           );
         })}

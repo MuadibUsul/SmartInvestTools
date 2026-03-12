@@ -27,6 +27,10 @@ export type ToolFieldConfig = {
   step?: string;
   helpText?: string;
   items?: AllocationFormValue[];
+  suggestions?: Array<{
+    value: string;
+    label?: string;
+  }>;
 };
 
 export type ResultCard = {
