@@ -35,6 +35,7 @@ export type ResultCard = {
   helperText?: string;
   detailValue?: string;
   tone?: "--color-accent" | "--color-highlight" | "--color-text";
+  wrapValue?: boolean;
 };
 
 export type ToolChartData = {

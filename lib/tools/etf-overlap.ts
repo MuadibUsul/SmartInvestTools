@@ -138,6 +138,7 @@ export function buildEtfOverlapSummary(
         label: "主要重叠持仓",
         value: result.overlappingHoldings.map((item) => item.symbol).join(", "),
         helperText: "当前占位模型识别出的主要重叠标的。",
+        wrapValue: true,
       },
     ];
   }
@@ -153,6 +154,7 @@ export function buildEtfOverlapSummary(
       label: "Overlapping holdings",
       value: result.overlappingHoldings.map((item) => item.symbol).join(", "),
       helperText: "Top overlapping names currently surfaced by the placeholder model.",
+      wrapValue: true,
     },
   ];
 }

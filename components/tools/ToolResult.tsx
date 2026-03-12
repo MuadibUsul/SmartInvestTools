@@ -28,7 +28,11 @@ export function ToolResult({ items, locale }: ToolResultProps) {
               {item.label}
             </p>
             <p
-              className="metric-value mt-5 max-w-full"
+              className={
+                item.wrapValue
+                  ? "mt-5 max-w-full min-w-0 [overflow-wrap:anywhere] text-[clamp(1.25rem,11cqw,1.95rem)] font-semibold leading-[1.12] tracking-[-0.045em] text-[var(--color-text)]"
+                  : "metric-value mt-5 max-w-full"
+              }
               style={{ color: item.tone ? `var(${item.tone})` : "var(--color-text)" }}
             >
               {item.value}
