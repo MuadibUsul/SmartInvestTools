@@ -29,7 +29,12 @@ export function ToolCard({ locale, tool }: ToolCardProps) {
           </div>
           <div className="space-y-3">
             <h3 className="max-w-[16ch] text-[1.9rem] font-semibold leading-[1.02] tracking-[-0.05em] text-[var(--color-text)]">
-              {tool.title}
+              <Link
+                href={withLocale(locale, `/tools/${tool.slug}`)}
+                className="hover:text-[var(--color-accent)]"
+              >
+                {tool.title}
+              </Link>
             </h3>
             <p className="text-[0.96rem] leading-8 text-[var(--color-muted)]">
               {tool.shortDescription}
@@ -53,6 +58,7 @@ export function ToolCard({ locale, tool }: ToolCardProps) {
             </p>
             <Link
               href={withLocale(locale, `/tools/${tool.slug}`)}
+              aria-label={`${dictionary.toolUi.openTool}: ${tool.title}`}
               className="inline-flex items-center rounded-full bg-[var(--color-text)] px-5 py-2.5 text-sm font-semibold text-[var(--color-bg)] shadow-[var(--shadow-card)] transition-transform group-hover:-translate-y-0.5"
             >
               {dictionary.toolUi.openTool}

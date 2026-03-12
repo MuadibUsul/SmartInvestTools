@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Space_Grotesk } from "next/font/google";
 
-import { siteUrl } from "@/lib/site";
+import { getAbsoluteUrl, siteName, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const bodyFont = DM_Sans({
@@ -16,7 +16,29 @@ const displayFont = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Smart Invest Tools",
+  title: {
+    default: siteName,
+    template: `%s | ${siteName}`,
+  },
+  description:
+    "Practical investing calculators for growth, income, portfolio planning, debt, retirement, and financial independence.",
+  alternates: {
+    canonical: getAbsoluteUrl("/"),
+  },
+  openGraph: {
+    title: siteName,
+    description:
+      "Practical investing calculators for growth, income, portfolio planning, debt, retirement, and financial independence.",
+    type: "website",
+    url: getAbsoluteUrl("/"),
+    siteName,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description:
+      "Practical investing calculators for growth, income, portfolio planning, debt, retirement, and financial independence.",
+  },
 };
 
 export default function RootLayout({

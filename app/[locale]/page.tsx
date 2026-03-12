@@ -2,14 +2,29 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { StructuredData } from "@/components/seo/StructuredData";
 import { ToolCard } from "@/components/tools/ToolCard";
 import { getSiteDictionary } from "@/lib/copy";
+import {
+  buildLocalizedMetadata,
+  buildWebsiteSchema,
+} from "@/lib/seo";
 import { isLocale, withLocale, type Locale } from "@/lib/i18n";
-import { getAllTools } from "@/lib/tool-registry";
+import { getAllTools, getToolBySlug } from "@/lib/tool-registry";
+import { getToolCategoryGroups } from "@/lib/tool-grouping";
 
 type LocalizedHomePageProps = {
   params: Promise<{ locale: string }>;
 };
+
+const featuredToolSlugs = [
+  "compound-interest-calculator",
+  "retirement-fire-calculator",
+  "dividend-income-calculator",
+  "savings-goal-calculator",
+  "investment-return-calculator",
+  "portfolio-allocation-calculator",
+];
 
 export async function generateMetadata({
   params,
@@ -22,29 +37,12 @@ export async function generateMetadata({
 
   const dictionary = getSiteDictionary(locale);
 
-  return {
+  return buildLocalizedMetadata({
+    locale,
+    path: "/",
     title: dictionary.metadata.defaultTitle,
     description: dictionary.metadata.defaultDescription,
-    alternates: {
-      canonical: withLocale(locale, "/"),
-      languages: {
-        en: withLocale("en", "/"),
-        zh: withLocale("zh", "/"),
-      },
-    },
-    openGraph: {
-      title: dictionary.siteName,
-      description: dictionary.metadata.openGraphDescription,
-      type: "website",
-      url: withLocale(locale, "/"),
-      siteName: dictionary.siteName,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: dictionary.siteName,
-      description: dictionary.metadata.openGraphDescription,
-    },
-  };
+  });
 }
 
 export default async function LocalizedHomePage({
@@ -57,11 +55,23 @@ export default async function LocalizedHomePage({
   }
 
   const resolvedLocale = locale as Locale;
-  const tools = getAllTools(resolvedLocale);
   const dictionary = getSiteDictionary(resolvedLocale);
+  const allTools = getAllTools(resolvedLocale);
+  const featuredTools = [
+    ...featuredToolSlugs
+      .map((slug) => getToolBySlug(slug, resolvedLocale))
+      .filter((tool) => tool !== undefined),
+    ...allTools,
+  ].filter(
+    (tool, index, collection) =>
+      collection.findIndex((item) => item.slug === tool.slug) === index,
+  ).slice(0, 6);
+  const categoryGroups = getToolCategoryGroups(resolvedLocale);
 
   return (
     <div className="content-shell pb-20 pt-4">
+      <StructuredData data={buildWebsiteSchema(resolvedLocale)} />
+
       <section className="relative overflow-hidden rounded-[2.25rem] border border-white/60 bg-[linear-gradient(135deg,rgba(15,23,42,0.98),rgba(13,148,136,0.9),rgba(245,158,11,0.76))] px-6 py-16 text-white shadow-[var(--shadow-soft)] sm:px-10 sm:py-18 lg:px-14 lg:py-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.16),transparent_28%)]" />
         <div className="relative grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:gap-14">
@@ -109,7 +119,7 @@ export default async function LocalizedHomePage({
                     {dictionary.home.toolsAvailable}
                   </p>
                   <strong className="mt-2 block text-4xl font-semibold tracking-[-0.05em]">
-                    {tools.length}
+                    {allTools.length}
                   </strong>
                 </div>
                 <div className="rounded-full border border-white/14 bg-white/10 px-4 py-2 text-xs font-semibold tracking-[0.18em] text-white/72 uppercase">
@@ -163,13 +173,13 @@ export default async function LocalizedHomePage({
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {tools.map((tool) => (
+          {featuredTools.map((tool) => (
             <ToolCard key={tool.slug} locale={resolvedLocale} tool={tool} />
           ))}
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
+      <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <article className="card-surface">
           <p className="eyebrow">{dictionary.home.whyEyebrow}</p>
           <h2 className="mt-4 section-title max-w-3xl">
@@ -180,13 +190,14 @@ export default async function LocalizedHomePage({
         <aside className="card-surface space-y-5">
           <p className="eyebrow">{dictionary.home.categoriesEyebrow}</p>
           <div className="flex flex-wrap gap-3">
-            {dictionary.home.categories.map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-[var(--color-border)] bg-[color:var(--color-surface-strong)] px-4 py-2.5 text-sm font-medium text-[var(--color-muted)]"
+            {categoryGroups.map((group) => (
+              <Link
+                key={group.id}
+                href={`${withLocale(resolvedLocale, "/tools")}#${group.id}`}
+                className="rounded-full border border-[var(--color-border)] bg-[color:var(--color-surface-strong)] px-4 py-2.5 text-sm font-medium text-[var(--color-muted)] transition-colors hover:text-[var(--color-accent)]"
               >
-                {item}
-              </span>
+                {group.label} ({group.tools.length})
+              </Link>
             ))}
           </div>
         </aside>
@@ -194,3 +205,4 @@ export default async function LocalizedHomePage({
     </div>
   );
 }
+

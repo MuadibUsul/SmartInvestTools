@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { StructuredData } from "@/components/seo/StructuredData";
 import { ToolPageClient } from "@/components/tools/ToolPageClient";
 import { getSiteDictionary } from "@/lib/copy";
-import { isLocale, locales, withLocale, type Locale } from "@/lib/i18n";
+import {
+  buildFaqSchema,
+  buildLocalizedMetadata,
+  buildToolSchema,
+} from "@/lib/seo";
+import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { getAllToolSlugs, getToolBySlug } from "@/lib/tool-registry";
 
 type LocalizedToolPageProps = {
@@ -29,36 +35,20 @@ export async function generateMetadata({
   const tool = getToolBySlug(slug, locale);
 
   if (!tool) {
-    return {
+    return buildLocalizedMetadata({
+      locale,
+      path: `/tools/${slug}`,
       title: dictionary.toolUi.toolNotFoundTitle,
       description: dictionary.toolUi.toolNotFoundDescription,
-    };
+    });
   }
 
-  const localizedPath = `/tools/${tool.slug}`;
-
-  return {
+  return buildLocalizedMetadata({
+    locale,
+    path: `/tools/${tool.slug}`,
     title: tool.seo.title,
     description: tool.seo.description,
-    alternates: {
-      canonical: withLocale(locale, localizedPath),
-      languages: {
-        en: withLocale("en", localizedPath),
-        zh: withLocale("zh", localizedPath),
-      },
-    },
-    openGraph: {
-      title: tool.seo.title,
-      description: tool.seo.description,
-      type: "website",
-      url: withLocale(locale, localizedPath),
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: tool.seo.title,
-      description: tool.seo.description,
-    },
-  };
+  });
 }
 
 export default async function LocalizedToolPage({
@@ -70,11 +60,28 @@ export default async function LocalizedToolPage({
     notFound();
   }
 
-  const tool = getToolBySlug(slug, locale);
+  const resolvedLocale = locale as Locale;
+  const tool = getToolBySlug(slug, resolvedLocale);
 
   if (!tool) {
     notFound();
   }
 
-  return <ToolPageClient slug={slug} locale={locale as Locale} />;
+  const faqSchema = buildFaqSchema(
+    `/${resolvedLocale}/tools/${tool.slug}`,
+    tool.faq,
+  );
+
+  return (
+    <>
+      <StructuredData
+        data={[
+          buildToolSchema({ tool, locale: resolvedLocale }),
+          ...(faqSchema ? [faqSchema] : []),
+        ]}
+      />
+      <ToolPageClient slug={slug} locale={resolvedLocale} />
+    </>
+  );
 }
+

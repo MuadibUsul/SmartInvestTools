@@ -41,6 +41,18 @@ export function Footer({ locale }: FooterProps) {
               >
                 {dictionary.footer.allTools}
               </Link>
+              <Link
+                href={withLocale(locale, "/about")}
+                className="text-[var(--color-text)] hover:text-[var(--color-accent)]"
+              >
+                {dictionary.footer.about}
+              </Link>
+              <Link
+                href={withLocale(locale, "/privacy")}
+                className="text-[var(--color-text)] hover:text-[var(--color-accent)]"
+              >
+                {dictionary.footer.privacy}
+              </Link>
             </div>
           </div>
           <div>

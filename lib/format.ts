@@ -39,6 +39,17 @@ export function formatCompactNumber(value: number, locale: Locale = "en") {
   }).format(value);
 }
 
+export function formatNumber(
+  value: number,
+  locale: Locale = "en",
+  digits = 0,
+) {
+  return new Intl.NumberFormat(getIntlLocale(locale), {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(value);
+}
+
 export function formatPercent(value: number, digits = 1) {
   return `${value.toFixed(digits)}%`;
 }

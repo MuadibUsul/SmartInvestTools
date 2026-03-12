@@ -22,6 +22,8 @@ export type SiteDictionary = {
     popularTools: string;
     home: string;
     allTools: string;
+    about: string;
+    privacy: string;
   };
   home: {
     eyebrow: string;
@@ -87,11 +89,12 @@ export const siteCopy: Record<Locale, SiteDictionary> = {
   en: {
     siteName: "Smart Invest Tools",
     metadata: {
-      defaultTitle: "Smart Invest Tools | Free Investing Calculators and Portfolio Tools",
+      defaultTitle:
+        "Smart Invest Tools | Free Investing Calculators and Financial Planning Tools",
       defaultDescription:
-        "Smart Invest Tools offers modern calculators for compound growth, dividends, ETF overlap, portfolio allocation, and retirement planning.",
+        "Smart Invest Tools offers practical calculators for growth, dividends, portfolio planning, debt, retirement, and financial independence.",
       openGraphDescription:
-        "Free investing calculators and portfolio tools with a scalable architecture.",
+        "Free financial calculators for investing, retirement, portfolio planning, and long-term wealth decisions.",
     },
     header: {
       brandTop: "Smart Invest",
@@ -104,18 +107,20 @@ export const siteCopy: Record<Locale, SiteDictionary> = {
     },
     footer: {
       description:
-        "A modular fintech website for investment calculators, portfolio planning, and educational financial tools.",
+        "A modular fintech website for investment calculators, planning workflows, and clear educational finance content.",
       navigation: "Navigation",
       popularTools: "Popular tools",
       home: "Home",
-      allTools: "All Tools",
+      allTools: "All tools",
+      about: "About",
+      privacy: "Privacy",
     },
     home: {
       eyebrow: "Smart Invest Tools",
       title: "Smart Invest Tools",
-      subtitle: "Free Investing Calculators and Portfolio Tools",
+      subtitle: "Free Investing Calculators and Financial Planning Tools",
       description:
-        "Model long-term wealth, compare portfolio choices, and explore retirement scenarios with practical calculators designed for everyday investing decisions.",
+        "Model growth, compare strategies, estimate retirement scenarios, and plan cash flow with practical calculators built for everyday financial decisions.",
       exploreAll: "Explore all tools",
       openCompoundTool: "Open compound calculator",
       quickSnapshot: "Quick snapshot",
@@ -124,33 +129,39 @@ export const siteCopy: Record<Locale, SiteDictionary> = {
       whatYouCanDo: "What you can do",
       planGoalsTitle: "Plan goals with clarity",
       planGoalsDescription:
-        "Estimate growth, income, and allocation outcomes in seconds.",
+        "Estimate growth, income, debt costs, and portfolio outcomes in seconds.",
       experience: "Experience",
       clearOnEveryScreenTitle: "Clear on every screen",
       clearOnEveryScreenDescription:
         "Fast, readable tools built for desktop and mobile use.",
-      libraryEyebrow: "Tool library",
-      libraryTitle:
-        "Build better investing decisions with focused calculators",
+      libraryEyebrow: "Featured calculators",
+      libraryTitle: "Start with the calculators investors use most often",
       libraryDescription:
-        "Explore calculators built to make complex investing questions feel simpler, more visual, and easier to act on.",
+        "Explore a curated set of high-utility tools, then move into the full calculator library when you want to compare more scenarios.",
       viewAllTools: "View all tools",
       whyEyebrow: "Why investors use it",
       whyTitle: "Practical tools for long-term planning",
       whyDescription:
-        "Smart Invest Tools helps you compare scenarios, understand tradeoffs, and make more confident investing decisions with clean, easy-to-read calculators.",
+        "Smart Invest Tools helps you compare scenarios, understand tradeoffs, and make more confident investing decisions with clear, modular calculators.",
       categoriesEyebrow: "Categories",
-      categories: ["Growth", "Income", "Portfolio", "Retirement"],
+      categories: [
+        "Growth",
+        "Income",
+        "Portfolio",
+        "Retirement",
+        "Debt",
+        "Planning",
+      ],
     },
     toolsPage: {
       title: "Financial calculators for smarter investing decisions",
       description:
-        "Explore the full Smart Invest Tools library, from portfolio growth projections to dividend income estimates and retirement planning.",
+        "Explore the full Smart Invest Tools library, from compound growth and passive income to debt payoff, valuation, and retirement planning.",
       eyebrow: "Tool directory",
       metadataTitle:
-        "Investment Calculators and Portfolio Tools | Smart Invest Tools",
+        "Investment Calculators and Financial Planning Tools | Smart Invest Tools",
       metadataDescription:
-        "Browse all Smart Invest Tools calculators, including compound interest, dividends, ETF overlap, portfolio allocation, and FIRE planning.",
+        "Browse financial calculators for compounding, dividends, ETF costs, rebalancing, debt, retirement, financial independence, and more.",
     },
     toolUi: {
       inputsTitle: "Inputs",
@@ -166,7 +177,7 @@ export const siteCopy: Record<Locale, SiteDictionary> = {
         "Educational context to support clearer financial decisions.",
       relatedTitle: "Explore more tools",
       relatedDescription:
-        "Continue into related calculators and portfolio planning workflows.",
+        "Continue into related calculators and financial planning workflows.",
       interactiveChart: "Interactive chart",
       exploreCalculatorDetails: "Explore calculator details",
       openTool: "Open tool",
@@ -186,10 +197,11 @@ export const siteCopy: Record<Locale, SiteDictionary> = {
   zh: {
     siteName: "智投工具",
     metadata: {
-      defaultTitle: "智投工具 | 免费投资计算器与资产配置工具",
+      defaultTitle: "智投工具 | 免费投资计算器与理财规划工具",
       defaultDescription:
-        "智投工具提供复利、股息、ETF 重叠、资产配置与退休规划等现代投资计算器。",
-      openGraphDescription: "免费投资计算器与投资组合工具，结构清晰，使用直接。",
+        "智投工具提供增长、股息、资产配置、负债、退休与财务自由等实用金融计算器。",
+      openGraphDescription:
+        "免费金融计算器，覆盖投资增长、退休规划、资产配置、收益测算与长期理财决策。",
     },
     header: {
       brandTop: "智投",
@@ -202,51 +214,53 @@ export const siteCopy: Record<Locale, SiteDictionary> = {
     },
     footer: {
       description:
-        "一个模块化的金融工具站点，提供投资计算、资产配置规划与金融教育内容。",
+        "一个模块化的金融工具站点，提供投资计算、理财规划流程与清晰易读的金融教育内容。",
       navigation: "导航",
       popularTools: "热门工具",
       home: "首页",
       allTools: "全部工具",
+      about: "关于我们",
+      privacy: "隐私政策",
     },
     home: {
       eyebrow: "智投工具",
       title: "智投工具",
-      subtitle: "免费投资计算器与资产配置工具",
+      subtitle: "免费投资计算器与理财规划工具",
       description:
-        "用实用计算器建模长期财富增长、比较不同投资组合，并推演退休情景，让日常投资决策更有依据。",
+        "用实用计算器估算增长、比较策略、规划退休与现金流，让日常投资和理财决策更有依据。",
       exploreAll: "查看全部工具",
       openCompoundTool: "打开复利计算器",
       quickSnapshot: "快速概览",
       toolsAvailable: "工具数量",
       readyToUse: "即开即用",
       whatYouCanDo: "你可以做什么",
-      planGoalsTitle: "更清晰地规划目标",
+      planGoalsTitle: "更清晰地规划财务目标",
       planGoalsDescription:
-        "几秒钟内估算增长、现金流和资产配置结果。",
+        "几秒内估算增长、收入、负债成本与资产配置结果。",
       experience: "使用体验",
       clearOnEveryScreenTitle: "大小屏幕都清晰",
       clearOnEveryScreenDescription:
-        "工具响应迅速、信息易读，兼顾桌面端与移动端。",
-      libraryEyebrow: "工具库",
-      libraryTitle: "用更聚焦的计算器做出更好的投资决策",
+        "界面响应迅速、信息易读，兼顾桌面端与移动端。",
+      libraryEyebrow: "精选计算器",
+      libraryTitle: "先从最常用的投资计算器开始",
       libraryDescription:
-        "浏览一组把复杂投资问题做得更直观、更易理解、更容易执行的工具。",
+        "先浏览一组高频工具，再进入完整工具库继续比较更多情景与决策方案。",
       viewAllTools: "查看全部工具",
       whyEyebrow: "为什么投资者会使用它",
-      whyTitle: "面向长期规划的实用工具",
+      whyTitle: "服务长期规划的实用工具",
       whyDescription:
-        "智投工具帮助你比较方案、看清取舍，并通过清晰易读的计算器更有把握地做出投资决策。",
+        "智投工具帮助你比较方案、看清取舍，并通过清晰的模块化计算器更有把握地做出理财决策。",
       categoriesEyebrow: "分类",
-      categories: ["增长", "收入", "组合", "退休"],
+      categories: ["增长", "收入", "组合", "退休", "负债", "规划"],
     },
     toolsPage: {
-      title: "帮助你做出更聪明投资决策的金融计算器",
+      title: "帮助你做出更聪明理财决策的金融计算器",
       description:
-        "查看智投工具的完整工具库，涵盖资产增长预测、股息收入估算与退休规划。",
+        "浏览智投工具的完整工具库，覆盖复利增长、被动收入、债务成本、估值测算、退休规划与财务自由。",
       eyebrow: "工具目录",
-      metadataTitle: "投资计算器与资产配置工具 | 智投工具",
+      metadataTitle: "投资计算器与理财规划工具 | 智投工具",
       metadataDescription:
-        "浏览智投工具的全部计算器，包括复利、股息、ETF 重叠、资产配置与 FIRE 规划。",
+        "浏览复利、股息、ETF 成本、资产再平衡、贷款、退休、财务自由等多种金融计算器。",
     },
     toolUi: {
       inputsTitle: "输入项",
@@ -258,7 +272,7 @@ export const siteCopy: Record<Locale, SiteDictionary> = {
       educationTitle: "这款工具如何帮助你",
       educationDescription: "补充必要的背景知识，帮助你做出更清晰的金融判断。",
       relatedTitle: "继续探索更多工具",
-      relatedDescription: "查看相关计算器与投资组合规划流程，继续深入。",
+      relatedDescription: "查看相关计算器与理财规划流程，继续深入。",
       interactiveChart: "交互图表",
       exploreCalculatorDetails: "查看计算器详情",
       openTool: "打开工具",
@@ -279,3 +293,4 @@ export const siteCopy: Record<Locale, SiteDictionary> = {
 export function getSiteDictionary(locale: Locale) {
   return siteCopy[locale];
 }
+

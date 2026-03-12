@@ -50,7 +50,7 @@ export function ToolPageClient({ locale, slug }: ToolPageClientProps) {
 
   return (
     <div className="content-shell pb-20 pt-4">
-      <ToolHero tool={tool} />
+      <ToolHero locale={locale} tool={tool} />
       <div className="grid gap-8 xl:grid-cols-[0.88fr_1.12fr] xl:items-start">
         <ToolForm
           locale={locale}
