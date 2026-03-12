@@ -16,6 +16,7 @@ export function LocaleSwitcher({ locale }: LocaleSwitcherProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dictionary = getSiteDictionary(locale);
+  const currentLabel = localeLabels[locale].shortLabel;
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -42,19 +43,16 @@ export function LocaleSwitcher({ locale }: LocaleSwitcherProps) {
         aria-label={dictionary.localeSwitcher.ariaLabel}
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className="inline-flex h-11 min-w-[7.5rem] items-center justify-between rounded-full border border-[color:color-mix(in_srgb,var(--color-highlight)_28%,var(--color-border))] bg-[color:color-mix(in_srgb,var(--color-surface-strong)_82%,transparent)] px-4 text-sm font-semibold text-[var(--color-text)] shadow-[var(--shadow-card)] hover:-translate-y-0.5"
+        className={`inline-flex h-9 items-center justify-center rounded-full border px-3.5 text-xs font-medium ${
+          open
+            ? "border-[color:color-mix(in_srgb,var(--color-accent)_35%,var(--color-border))] bg-[color:color-mix(in_srgb,var(--color-accent)_10%,var(--color-surface-strong))] text-[var(--color-text)]"
+            : "border-[var(--color-border)] bg-[color:var(--color-surface-muted)] text-[var(--color-muted)]"
+        }`}
       >
-        <span>{localeLabels[locale].shortLabel}</span>
-        <span
-          className={`text-xs text-[var(--color-highlight)] transition-transform ${
-            open ? "rotate-180" : ""
-          }`}
-        >
-          ^
-        </span>
+        <span>{currentLabel}</span>
       </button>
       {open ? (
-        <div className="absolute right-0 z-20 mt-3 min-w-[10rem] overflow-hidden rounded-[1.3rem] border border-[var(--color-border)] bg-[color:var(--color-surface)] p-2 shadow-[var(--shadow-soft)] backdrop-blur">
+        <div className="absolute right-0 z-20 mt-2 min-w-[8.5rem] overflow-hidden rounded-[1.1rem] border border-[var(--color-border)] bg-[color:var(--color-surface)] p-1.5 shadow-[var(--shadow-soft)] backdrop-blur">
           {locales.map((entry) => {
             const href = swapLocaleInPathname(pathname, entry);
             const isActive = entry === locale;
@@ -63,7 +61,7 @@ export function LocaleSwitcher({ locale }: LocaleSwitcherProps) {
               <Link
                 key={entry}
                 href={href}
-                className={`flex items-center justify-between rounded-[0.95rem] px-4 py-3 text-sm font-medium ${
+                className={`flex items-center justify-between rounded-[0.85rem] px-3 py-2.5 text-sm font-medium ${
                   isActive
                     ? "bg-[color:color-mix(in_srgb,var(--color-accent)_12%,transparent)] text-[var(--color-text)]"
                     : "text-[var(--color-muted)] hover:bg-[color:var(--color-surface-strong)] hover:text-[var(--color-text)]"
