@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Deployment
+
+Deploying to your own server through GitHub Actions is documented in [docs/github-actions-deploy.md](docs/github-actions-deploy.md).
+
 ## Getting Started
 
 First, run the development server:

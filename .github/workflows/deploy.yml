@@ -6,67 +6,104 @@ on:
       - master
   workflow_dispatch:
 
+concurrency:
+  group: smartinvesttools-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  APP_NAME: ${{ vars.APP_NAME || 'smartinvesttools' }}
+  APP_PORT: ${{ vars.APP_PORT || '3010' }}
+  DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/var/www/smartinvesttools' }}
+  DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '22' }}
+  NODE_VERSION: ${{ vars.NODE_VERSION || '20.19.0' }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate deployment settings
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USERNAME: ${{ secrets.DEPLOY_USERNAME }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "${DEPLOY_HOST}" || { echo "::error::Missing DEPLOY_HOST secret."; exit 1; }
+          test -n "${DEPLOY_USERNAME}" || { echo "::error::Missing DEPLOY_USERNAME secret."; exit 1; }
+          test -n "${DEPLOY_SSH_PRIVATE_KEY}" || { echo "::error::Missing DEPLOY_SSH_PRIVATE_KEY secret."; exit 1; }
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          host: 8.140.219.56
-          username: root
-          port: 22
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script_stop: true
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Package standalone release
+        id: package
+        run: |
+          set -euo pipefail
+          RELEASE_NAME="release-${GITHUB_RUN_NUMBER}-${GITHUB_SHA::7}"
+          BUNDLE_DIR=".deploy/${RELEASE_NAME}"
+          mkdir -p "${BUNDLE_DIR}/.next"
+          cp -R .next/standalone/. "${BUNDLE_DIR}/"
+          cp -R .next/static "${BUNDLE_DIR}/.next/static"
+          cp -R public "${BUNDLE_DIR}/public"
+          cp ecosystem.config.cjs "${BUNDLE_DIR}/ecosystem.config.cjs"
+          tar -C "${BUNDLE_DIR}" -czf ".deploy/${RELEASE_NAME}.tar.gz" .
+          echo "release_name=${RELEASE_NAME}" >> "${GITHUB_OUTPUT}"
+
+      - name: Prepare remote directories
+        env:
+          DEPLOY_PATH: ${{ env.DEPLOY_PATH }}
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          port: ${{ env.DEPLOY_PORT }}
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          envs: DEPLOY_PATH
           command_timeout: 60m
-          script: >
-            bash -lc '
-            set -euxo pipefail;
-            export DEPLOY_DIR="/var/www/smartinvesttools";
-            export REPO_URL="https://github.com/MuadibUsul/SmartInvestTools.git";
-            export BRANCH="master";
-            export NEXT_TELEMETRY_DISABLED=1;
-            echo "== Environment ==";
-            whoami;
-            hostname;
-            pwd;
-            command -v node || true;
-            command -v npm || true;
-            command -v git || true;
-            echo "== Prepare deploy directory ==";
-            mkdir -p "$DEPLOY_DIR";
-            cd "$DEPLOY_DIR";
-            pwd;
-            ls -la;
-            echo "== Sync source ==";
-            if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-              git fetch origin "$BRANCH";
-              git reset --hard "origin/$BRANCH";
-            else
-              if [ -n "$(find . -mindepth 1 -maxdepth 1 -print -quit)" ]; then
-                echo "Deploy directory exists but is not a git repository.";
-                exit 1;
-              fi;
-              git clone --branch "$BRANCH" "$REPO_URL" .;
-            fi;
-            echo "== Configure npm ==";
-            npm config set registry https://registry.npmmirror.com;
-            npm config set fund false;
-            npm config set audit false;
-            npm config set fetch-retries 5;
-            npm config set fetch-retry-maxtimeout 120000;
-            npm config get registry;
-            echo "== Install dependencies ==";
-            npm ci --no-audit --no-fund --prefer-offline;
-            echo "== Build application ==";
-            npm run build;
-            echo "== Ensure pm2 ==";
-            if ! command -v pm2 >/dev/null 2>&1; then
-              npm install -g pm2 --no-audit --no-fund;
-            fi;
-            echo "== Start application ==";
-            pm2 startOrReload ecosystem.config.cjs --update-env;
-            pm2 save;
-            pm2 list;
-            '
+          script: |
+            set -euo pipefail
+            mkdir -p "${DEPLOY_PATH}/incoming" "${DEPLOY_PATH}/releases" "${DEPLOY_PATH}/shared"
+
+      - name: Upload release bundle
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          port: ${{ env.DEPLOY_PORT }}
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          source: ".deploy/${{ steps.package.outputs.release_name }}.tar.gz"
+          strip_components: 1
+          overwrite: true
+          target: ${{ env.DEPLOY_PATH }}/incoming
+
+      - name: Activate release on server
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          APP_PORT: ${{ env.APP_PORT }}
+          DEPLOY_PATH: ${{ env.DEPLOY_PATH }}
+          RELEASE_NAME: ${{ steps.package.outputs.release_name }}
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          port: ${{ env.DEPLOY_PORT }}
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          envs: APP_NAME,APP_PORT,DEPLOY_PATH,RELEASE_NAME
+          command_timeout: 60m
+          script_path: scripts/deploy-release.sh
