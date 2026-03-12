@@ -2,77 +2,78 @@ import {
   buildCompoundInterestChart,
   buildCompoundInterestSummary,
   calculateCompoundInterest,
-  compoundInterestDefaults,
-  compoundInterestFields,
+  getCompoundInterestDefaultState,
+  getCompoundInterestFields,
   parseCompoundInterestInputs,
 } from "@/lib/tools/compound-interest";
 import {
   buildDividendSummary,
   calculateDividendIncome,
-  dividendCalculatorDefaults,
-  dividendCalculatorFields,
+  getDividendCalculatorDefaultState,
+  getDividendCalculatorFields,
   parseDividendIncomeInputs,
 } from "@/lib/tools/dividend-calculator";
 import {
   buildEtfOverlapSummary,
   calculateEtfOverlap,
-  etfOverlapDefaults,
-  etfOverlapFields,
+  getEtfOverlapDefaultState,
+  getEtfOverlapFields,
   parseEtfOverlapInputs,
 } from "@/lib/tools/etf-overlap";
 import {
   buildPortfolioAllocationChart,
   buildPortfolioAllocationSummary,
   calculatePortfolioAllocation,
+  getPortfolioAllocationDefaultState,
+  getPortfolioAllocationFields,
   parsePortfolioAllocationInputs,
-  portfolioAllocationDefaults,
-  portfolioAllocationFields,
 } from "@/lib/tools/portfolio-allocation";
 import {
   buildRetirementFireChart,
   buildRetirementFireSummary,
   calculateRetirementFire,
+  getRetirementFireDefaultState,
+  getRetirementFireFields,
   parseRetirementFireInputs,
-  retirementFireDefaults,
-  retirementFireFields,
 } from "@/lib/tools/retirement-fire";
+import type { Locale } from "@/lib/i18n";
 import { toolsConfig } from "@/lib/tools-config";
-import type { RegisteredTool, ToolDefinition } from "@/lib/types";
+import type { RegisteredTool, ToolConfig, ToolDefinition } from "@/lib/types";
 
 const toolDefinitions: Record<string, ToolDefinition> = {
   "compound-interest-calculator": {
-    fields: compoundInterestFields,
-    defaults: compoundInterestDefaults,
+    getFields: getCompoundInterestFields,
+    getDefaultState: getCompoundInterestDefaultState,
     parseInputs: parseCompoundInterestInputs,
     calculate: calculateCompoundInterest,
     buildSummaryItems: buildCompoundInterestSummary,
     buildChartData: buildCompoundInterestChart,
   } as ToolDefinition,
   "dividend-income-calculator": {
-    fields: dividendCalculatorFields,
-    defaults: dividendCalculatorDefaults,
+    getFields: getDividendCalculatorFields,
+    getDefaultState: getDividendCalculatorDefaultState,
     parseInputs: parseDividendIncomeInputs,
     calculate: calculateDividendIncome,
     buildSummaryItems: buildDividendSummary,
   } as ToolDefinition,
   "etf-overlap-tool": {
-    fields: etfOverlapFields,
-    defaults: etfOverlapDefaults,
+    getFields: getEtfOverlapFields,
+    getDefaultState: getEtfOverlapDefaultState,
     parseInputs: parseEtfOverlapInputs,
     calculate: calculateEtfOverlap,
     buildSummaryItems: buildEtfOverlapSummary,
   } as ToolDefinition,
   "portfolio-allocation-calculator": {
-    fields: portfolioAllocationFields,
-    defaults: portfolioAllocationDefaults,
+    getFields: getPortfolioAllocationFields,
+    getDefaultState: getPortfolioAllocationDefaultState,
     parseInputs: parsePortfolioAllocationInputs,
     calculate: calculatePortfolioAllocation,
     buildSummaryItems: buildPortfolioAllocationSummary,
     buildChartData: buildPortfolioAllocationChart,
   } as ToolDefinition,
   "retirement-fire-calculator": {
-    fields: retirementFireFields,
-    defaults: retirementFireDefaults,
+    getFields: getRetirementFireFields,
+    getDefaultState: getRetirementFireDefaultState,
     parseInputs: parseRetirementFireInputs,
     calculate: calculateRetirementFire,
     buildSummaryItems: buildRetirementFireSummary,
@@ -80,15 +81,47 @@ const toolDefinitions: Record<string, ToolDefinition> = {
   } as ToolDefinition,
 };
 
-const registeredTools: RegisteredTool[] = toolsConfig.map((tool) => ({
+const registeredTools: Array<ToolConfig & { definition: ToolDefinition }> = toolsConfig.map((tool) => ({
   ...tool,
   definition: toolDefinitions[tool.slug],
 }));
 
-export function getAllTools() {
-  return registeredTools;
+function localizeTool(
+  tool: ToolConfig & { definition: ToolDefinition },
+  locale: Locale,
+): RegisteredTool {
+  const localizedContent = tool.locales[locale];
+
+  return {
+    slug: tool.slug,
+    hasChart: tool.hasChart,
+    relatedTools: tool.relatedTools,
+    title: localizedContent.title,
+    shortDescription: localizedContent.shortDescription,
+    longDescription: localizedContent.longDescription,
+    category: localizedContent.category,
+    tags: localizedContent.tags,
+    seo: localizedContent.seo,
+    faq: localizedContent.faq,
+    educationContent: localizedContent.educationContent,
+    definition: tool.definition,
+  };
 }
 
-export function getToolBySlug(slug: string) {
-  return registeredTools.find((tool) => tool.slug === slug);
+export function getAllToolSlugs() {
+  return registeredTools.map((tool) => tool.slug);
+}
+
+export function getAllTools(locale: Locale) {
+  return registeredTools.map((tool) => localizeTool(tool, locale));
+}
+
+export function getToolBySlug(slug: string, locale: Locale) {
+  const tool = registeredTools.find((entry) => entry.slug === slug);
+
+  if (!tool) {
+    return undefined;
+  }
+
+  return localizeTool(tool, locale);
 }

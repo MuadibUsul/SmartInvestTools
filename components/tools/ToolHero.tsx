@@ -1,7 +1,7 @@
-import type { ToolConfig } from "@/lib/types";
+import type { LocalizedTool } from "@/lib/types";
 
 type ToolHeroProps = {
-  tool: ToolConfig;
+  tool: LocalizedTool;
 };
 
 export function ToolHero({ tool }: ToolHeroProps) {

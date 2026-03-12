@@ -1,27 +1,40 @@
 import Link from "next/link";
 
+import { LocaleSwitcher } from "@/components/layout/LocaleSwitcher";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { getSiteDictionary } from "@/lib/copy";
+import { withLocale, type Locale } from "@/lib/i18n";
 
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/tools", label: "Tools" },
-  { href: "/tools/compound-interest-calculator", label: "Featured Tool" },
-];
+type HeaderProps = {
+  locale: Locale;
+};
 
-export function Header() {
+export function Header({ locale }: HeaderProps) {
+  const dictionary = getSiteDictionary(locale);
+  const navItems = [
+    { href: withLocale(locale, "/"), label: dictionary.header.home },
+    { href: withLocale(locale, "/tools"), label: dictionary.header.tools },
+    {
+      href: withLocale(locale, "/tools/compound-interest-calculator"),
+      label: dictionary.header.featuredTool,
+    },
+  ];
+
   return (
     <header className="relative z-10 mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between rounded-full border border-[var(--color-border)] bg-[color:var(--color-surface)] px-4 py-3 shadow-[var(--shadow-soft)] backdrop-blur sm:px-5">
-        <Link href="/" className="flex items-center">
+        <Link href={withLocale(locale, "/")} className="flex items-center">
           <div className="hidden sm:block">
             <p className="font-[var(--font-display)] text-sm font-semibold tracking-[0.16em] text-[var(--color-muted)] uppercase">
-              Smart Invest
+              {dictionary.header.brandTop}
             </p>
-            <p className="text-sm text-[var(--color-text)]">Investment tools</p>
+            <p className="text-sm text-[var(--color-text)]">
+              {dictionary.header.brandBottom}
+            </p>
           </div>
           <div className="sm:hidden">
             <p className="font-[var(--font-display)] text-base font-semibold tracking-[-0.04em] text-[var(--color-text)]">
-              Smart Invest Tools
+              {dictionary.header.mobileBrand}
             </p>
           </div>
         </Link>
@@ -39,12 +52,13 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <LocaleSwitcher locale={locale} />
+          <ThemeToggle locale={locale} />
           <Link
-            href="/tools"
+            href={withLocale(locale, "/tools")}
             className="hidden rounded-full bg-[var(--color-text)] px-4 py-2 text-sm font-semibold text-[var(--color-bg)] sm:inline-flex"
           >
-            Browse tools
+            {dictionary.header.browseTools}
           </Link>
         </div>
       </div>

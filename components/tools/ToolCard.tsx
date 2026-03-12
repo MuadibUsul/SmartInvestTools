@@ -1,12 +1,17 @@
 import Link from "next/link";
 
-import type { ToolConfig } from "@/lib/types";
+import { getSiteDictionary } from "@/lib/copy";
+import { withLocale, type Locale } from "@/lib/i18n";
+import type { LocalizedTool } from "@/lib/types";
 
 type ToolCardProps = {
-  tool: ToolConfig;
+  locale: Locale;
+  tool: LocalizedTool;
 };
 
-export function ToolCard({ tool }: ToolCardProps) {
+export function ToolCard({ locale, tool }: ToolCardProps) {
+  const dictionary = getSiteDictionary(locale);
+
   return (
     <article className="card-surface subtle-grid group relative overflow-hidden">
       <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,var(--color-accent),transparent)]" />
@@ -18,7 +23,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             </span>
             {tool.hasChart ? (
               <span className="rounded-full border border-[var(--color-border)] bg-[color:var(--color-surface-muted)] px-3.5 py-2 text-[11px] font-medium text-[var(--color-muted)]">
-                Interactive chart
+                {dictionary.toolUi.interactiveChart}
               </span>
             ) : null}
           </div>
@@ -44,13 +49,13 @@ export function ToolCard({ tool }: ToolCardProps) {
           </div>
           <div className="flex items-center justify-between gap-4 border-t border-[var(--color-border)] pt-5">
             <p className="text-sm text-[var(--color-muted-soft)]">
-              Explore calculator details
+              {dictionary.toolUi.exploreCalculatorDetails}
             </p>
             <Link
-              href={`/tools/${tool.slug}`}
+              href={withLocale(locale, `/tools/${tool.slug}`)}
               className="inline-flex items-center rounded-full bg-[var(--color-text)] px-5 py-2.5 text-sm font-semibold text-[var(--color-bg)] shadow-[var(--shadow-card)] transition-transform group-hover:-translate-y-0.5"
             >
-              Open tool
+              {dictionary.toolUi.openTool}
             </Link>
           </div>
         </div>

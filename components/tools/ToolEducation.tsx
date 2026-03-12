@@ -1,16 +1,21 @@
+import { getSiteDictionary } from "@/lib/copy";
+import type { Locale } from "@/lib/i18n";
 import type { EducationSection } from "@/lib/types";
 
 type ToolEducationProps = {
   sections: EducationSection[];
+  locale: Locale;
 };
 
-export function ToolEducation({ sections }: ToolEducationProps) {
+export function ToolEducation({ sections, locale }: ToolEducationProps) {
+  const dictionary = getSiteDictionary(locale);
+
   return (
     <section className="card-surface space-y-7">
       <div className="space-y-3">
-        <h2 className="section-title">How this tool helps</h2>
+        <h2 className="section-title">{dictionary.toolUi.educationTitle}</h2>
         <p className="text-sm leading-7 text-[var(--color-muted)]">
-          Educational context to support clearer financial decisions.
+          {dictionary.toolUi.educationDescription}
         </p>
       </div>
       <div className="space-y-8">

@@ -1,16 +1,21 @@
+import { getSiteDictionary } from "@/lib/copy";
+import type { Locale } from "@/lib/i18n";
 import type { ToolFaqItem } from "@/lib/types";
 
 type ToolFaqProps = {
   faq: ToolFaqItem[];
+  locale: Locale;
 };
 
-export function ToolFaq({ faq }: ToolFaqProps) {
+export function ToolFaq({ faq, locale }: ToolFaqProps) {
+  const dictionary = getSiteDictionary(locale);
+
   return (
     <section className="card-surface space-y-5">
       <div className="space-y-2">
-        <h2 className="section-title">Frequently asked questions</h2>
+        <h2 className="section-title">{dictionary.toolUi.faqTitle}</h2>
         <p className="text-sm leading-7 text-[var(--color-muted)]">
-          Quick answers to common questions about this tool.
+          {dictionary.toolUi.faqDescription}
         </p>
       </div>
       <div className="space-y-3">

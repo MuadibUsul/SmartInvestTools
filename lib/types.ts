@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n";
+
 export type ToolFieldType =
   | "currency"
   | "number"
@@ -67,6 +69,34 @@ export type ToolSeoMeta = {
 
 export type ToolConfig = {
   slug: string;
+  hasChart: boolean;
+  relatedTools: string[];
+  locales: Record<
+    Locale,
+    {
+      title: string;
+      shortDescription: string;
+      longDescription: string;
+      category: string;
+      tags: string[];
+      seo: ToolSeoMeta;
+      faq: ToolFaqItem[];
+      educationContent: EducationSection[];
+    }
+  >;
+};
+
+export type ToolDefinition<TParsedInput = unknown, TResult = unknown> = {
+  getFields: (locale: Locale) => ToolFieldConfig[];
+  getDefaultState: (locale: Locale) => FormState;
+  parseInputs: (values: FormState) => TParsedInput;
+  calculate: (inputs: TParsedInput) => TResult;
+  buildSummaryItems: (result: TResult, locale: Locale) => ResultCard[];
+  buildChartData?: (result: TResult, locale: Locale) => ToolChartData | undefined;
+};
+
+export type LocalizedTool = {
+  slug: string;
   title: string;
   shortDescription: string;
   longDescription: string;
@@ -79,15 +109,6 @@ export type ToolConfig = {
   relatedTools: string[];
 };
 
-export type ToolDefinition<TParsedInput = unknown, TResult = unknown> = {
-  fields: ToolFieldConfig[];
-  defaults: FormState;
-  parseInputs: (values: FormState) => TParsedInput;
-  calculate: (inputs: TParsedInput) => TResult;
-  buildSummaryItems: (result: TResult) => ResultCard[];
-  buildChartData?: (result: TResult) => ToolChartData | undefined;
-};
-
-export type RegisteredTool = ToolConfig & {
+export type RegisteredTool = LocalizedTool & {
   definition: ToolDefinition;
 };

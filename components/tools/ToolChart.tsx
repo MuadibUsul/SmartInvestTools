@@ -17,6 +17,7 @@ import {
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 
 import { formatCompactNumber } from "@/lib/format";
+import { getIntlLocale, type Locale } from "@/lib/i18n";
 import type { ToolChartData } from "@/lib/types";
 
 ChartJS.register(
@@ -33,6 +34,7 @@ ChartJS.register(
 
 type ToolChartProps = {
   chart: ToolChartData;
+  locale: Locale;
 };
 
 function toDatasetColor(index: number) {
@@ -46,7 +48,7 @@ function toDatasetColor(index: number) {
   return palette[index % palette.length];
 }
 
-export function ToolChart({ chart }: ToolChartProps) {
+export function ToolChart({ chart, locale }: ToolChartProps) {
   const sharedLegend = {
     legend: {
       labels: {
@@ -70,7 +72,7 @@ export function ToolChart({ chart }: ToolChartProps) {
       ticks: {
         color: "var(--color-muted)",
         callback: (value: string | number) =>
-          `${chart.valuePrefix ?? ""}${formatCompactNumber(Number(value))}${chart.valueSuffix ?? ""}`,
+          `${chart.valuePrefix ?? ""}${formatCompactNumber(Number(value), locale)}${chart.valueSuffix ?? ""}`,
       },
       grid: {
         color: "rgba(148, 163, 184, 0.16)",
@@ -88,7 +90,7 @@ export function ToolChart({ chart }: ToolChartProps) {
           label: (context: TooltipItem<"line">) =>
             `${context.dataset.label ?? ""}: ${chart.valuePrefix ?? ""}${Number(
               context.parsed.y ?? 0,
-            ).toLocaleString("en-US")}${chart.valueSuffix ?? ""}`,
+            ).toLocaleString(getIntlLocale(locale))}${chart.valueSuffix ?? ""}`,
         },
       },
     },
@@ -105,7 +107,7 @@ export function ToolChart({ chart }: ToolChartProps) {
           label: (context: TooltipItem<"bar">) =>
             `${context.dataset.label ?? ""}: ${chart.valuePrefix ?? ""}${Number(
               context.parsed.y ?? 0,
-            ).toLocaleString("en-US")}${chart.valueSuffix ?? ""}`,
+            ).toLocaleString(getIntlLocale(locale))}${chart.valueSuffix ?? ""}`,
         },
       },
     },
@@ -123,7 +125,7 @@ export function ToolChart({ chart }: ToolChartProps) {
           label: (context: TooltipItem<"doughnut">) =>
             `${context.label}: ${chart.valuePrefix ?? ""}${Number(
               context.raw ?? 0,
-            ).toLocaleString("en-US")}${chart.valueSuffix ?? ""}`,
+            ).toLocaleString(getIntlLocale(locale))}${chart.valueSuffix ?? ""}`,
         },
       },
     },

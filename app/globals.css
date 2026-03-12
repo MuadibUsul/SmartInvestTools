@@ -53,7 +53,12 @@ body {
     radial-gradient(circle at bottom right, rgba(245, 158, 11, 0.08), transparent 24%),
     var(--color-bg);
   color: var(--color-text);
-  font-family: var(--font-body), sans-serif;
+  font-family:
+    var(--font-body),
+    "PingFang SC",
+    "Microsoft YaHei",
+    "Noto Sans CJK SC",
+    sans-serif;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
 }
@@ -62,7 +67,12 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-display), sans-serif;
+  font-family:
+    var(--font-display),
+    "PingFang SC",
+    "Microsoft YaHei",
+    "Noto Sans CJK SC",
+    sans-serif;
 }
 
 a,

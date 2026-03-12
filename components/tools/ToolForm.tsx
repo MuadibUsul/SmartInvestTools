@@ -1,8 +1,11 @@
 "use client";
 
+import { getSiteDictionary } from "@/lib/copy";
+import type { Locale } from "@/lib/i18n";
 import type { AllocationFormValue, FormState, ToolFieldConfig } from "@/lib/types";
 
 type ToolFormProps = {
+  locale: Locale;
   fields: ToolFieldConfig[];
   values: FormState;
   onChange: (key: string, value: string) => void;
@@ -37,17 +40,20 @@ function getAllocationValue(
 }
 
 export function ToolForm({
+  locale,
   fields,
   values,
   onChange,
   onAllocationChange,
 }: ToolFormProps) {
+  const dictionary = getSiteDictionary(locale);
+
   return (
     <section className="card-surface space-y-7">
       <div className="space-y-3">
-        <h2 className="section-title">Inputs</h2>
+        <h2 className="section-title">{dictionary.toolUi.inputsTitle}</h2>
         <p className="text-sm leading-7 text-[var(--color-muted)]">
-          Adjust the assumptions to update the results instantly.
+          {dictionary.toolUi.inputsDescription}
         </p>
       </div>
       <div className="grid gap-5">

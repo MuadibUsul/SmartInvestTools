@@ -1,16 +1,21 @@
+import { getSiteDictionary } from "@/lib/copy";
+import type { Locale } from "@/lib/i18n";
 import type { ResultCard } from "@/lib/types";
 
 type ToolResultProps = {
   items: ResultCard[];
+  locale: Locale;
 };
 
-export function ToolResult({ items }: ToolResultProps) {
+export function ToolResult({ items, locale }: ToolResultProps) {
+  const dictionary = getSiteDictionary(locale);
+
   return (
     <section className="card-surface space-y-7">
       <div className="space-y-3">
-        <h2 className="section-title">Results</h2>
+        <h2 className="section-title">{dictionary.toolUi.resultsTitle}</h2>
         <p className="text-sm leading-7 text-[var(--color-muted)]">
-          These metrics update as your assumptions change.
+          {dictionary.toolUi.resultsDescription}
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
